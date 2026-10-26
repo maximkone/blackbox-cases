@@ -15,6 +15,31 @@ same method.
 | [0001](cases/0001-checked-build.md) | small native game server, ~1 MB, redacted | static, no decompiler | live assertions in a shipped binary; admin dispatcher located |
 | [0002](cases/0002-android-teardown.md) | open-source Android app, 12.6 MB, public | manifest + decompiled code | 6 unguarded exported components; no key material; no TLS bypass |
 
+## Tools
+
+**[blackbox-mcp](tools/blackbox_mcp.py)** — an MCP server that gives an AI agent
+four things a shell cannot:
+
+| tool | answers |
+|---|---|
+| `pe_xref` | who references this string in a native PE — with disassembly around each hit |
+| `pe_sections` | image base, machine, section map |
+| `apk_manifest` | package, SDK levels, permissions, components, exported-without-permission |
+| `binary_digest` | sha256, size, format — before any analysis |
+
+No Ghidra. No IDA. No jadx. No device. No upload. Read-only by construction:
+nothing here writes, executes, or opens a handle to a running process.
+
+```bash
+pip install pefile capstone
+python tools/blackbox_mcp.py        # stdio MCP
+```
+
+Why it exists: an agent with a shell can run `strings`, and that is where it
+stops. "Who references this", "what is in this manifest", "what is this file" are
+the first three questions of every reverse-engineering task, and grep answers
+none of them.
+
 ## How the work is described
 
 Every claim carries one of four grades, in the same line as the claim:
